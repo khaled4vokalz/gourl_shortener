@@ -1,6 +1,8 @@
 package db
 
-import "sync"
+import (
+	"sync"
+)
 
 type InMemoryDb struct {
 	store map[string]string
@@ -18,4 +20,11 @@ func (db *InMemoryDb) Save(shortened, original string) error {
 	defer db.mu.Unlock()
 	db.store[shortened] = original
 	return nil
+}
+
+func (db *InMemoryDb) Get(shortened string) (string, bool) {
+	db.mu.Lock()
+	defer db.mu.Unlock()
+	original, exists := db.store[shortened]
+	return original, exists
 }
