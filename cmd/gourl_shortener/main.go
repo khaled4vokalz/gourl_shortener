@@ -1,16 +1,27 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
+	config_loader "github.com/khaled4vokalz/gourl_shortener/internal/config"
 	"github.com/khaled4vokalz/gourl_shortener/internal/db"
 	"github.com/khaled4vokalz/gourl_shortener/internal/handlers"
 )
 
 func main() {
-	port := "8080"
+	LoadEnv()
+	env := os.Getenv("ENVIRONMENT")
+	if env == "" {
+		env = "DEV"
+	}
+
+	config, _ := config_loader.LoadConfig(fmt.Sprintf("configuration/%s.yaml", strings.ToLower(env)))
+	log.Print(config.Server)
+
 	// DI :D
 	storage := db.NewInMemoryDb()
 
@@ -22,7 +33,11 @@ func main() {
 			handlers.GetOriginalUrlHandler(w, r, storage)
 		}
 	})
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
+
+	port := config.Server.Port // TODO: this should have a default if not set
+	host := config.Server.Host // TODO: this should have a default if not set
+
+	if err := http.ListenAndServe(host+":"+port, nil); err != nil {
 		log.Fatalf("Couldn't start the server because of: %s", err)
 	}
 }
