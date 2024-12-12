@@ -1,15 +1,20 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/khaled4vokalz/gourl_shortener/internal/db"
+	"github.com/khaled4vokalz/gourl_shortener/internal/handlers"
 )
 
 func main() {
 	port := "8080"
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello, World!\n")
+	// DI :D
+	storage := db.NewInMemoryDb()
+
+	http.HandleFunc("/shorten", func(w http.ResponseWriter, r *http.Request) {
+		handlers.ShortenUrlHandler(w, r, storage)
 	})
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatalf("Couldn't start the server because of: %s", err)
