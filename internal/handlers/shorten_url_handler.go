@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
+	"github.com/khaled4vokalz/gourl_shortener/internal/cache"
 	"github.com/khaled4vokalz/gourl_shortener/internal/db"
 	"github.com/khaled4vokalz/gourl_shortener/internal/service"
 	"github.com/khaled4vokalz/gourl_shortener/internal/utils"
@@ -14,7 +16,7 @@ type Request struct {
 	URL string `json:"url"` // I like this tag thing in go :+1:
 }
 
-func ShortenUrlHandler(w http.ResponseWriter, r *http.Request, storage db.Storage) {
+func ShortenUrlHandler(w http.ResponseWriter, r *http.Request, storage db.Storage, cache cache.Cache) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
@@ -43,6 +45,13 @@ func ShortenUrlHandler(w http.ResponseWriter, r *http.Request, storage db.Storag
 	err := storage.Save(shortened, request.URL)
 	if err != nil {
 		http.Error(w, "Failed to store URL", http.StatusInternalServerError)
+		return
+	}
+
+	// Cache the URL (keep it for 10 minutes now. TODO: make this configurable)
+	err = cache.Set(shortened, request.URL, 10*time.Minute)
+	if err != nil {
+		http.Error(w, "Failed to cache URL", http.StatusInternalServerError)
 		return
 	}
 

@@ -2,3 +2,9 @@ server:
   host: 0.0.0.0
   port: 443
 db_conn_string: "user=postgres password=<pass> dbname=gourl_shortener sslmode=disable"
+cache:
+  host: localhost
+  port: 6379
+  database: 0
+  username: <user>
+  password: <pass>

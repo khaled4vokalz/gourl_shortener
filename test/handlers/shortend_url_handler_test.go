@@ -7,10 +7,22 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/khaled4vokalz/gourl_shortener/internal/db"
 	"github.com/khaled4vokalz/gourl_shortener/internal/handlers"
 )
+
+// MockStorage for testing
+type MockCache struct{}
+
+func (m *MockCache) Set(shortened, originalUrl string, ttl time.Duration) error {
+	return nil
+}
+
+func (m *MockCache) Get(shortened string) (string, error) {
+	return "", nil
+}
 
 func TestShortenUrlHandler(t *testing.T) {
 	reqBody := map[string]string{
@@ -60,8 +72,9 @@ func performPOSTReq(reqBody map[string]string, t *testing.T) *httptest.ResponseR
 
 	router := http.NewServeMux()
 	router.HandleFunc("/shorten", func(w http.ResponseWriter, r *http.Request) {
-		handlers.ShortenUrlHandler(w, r, storage)
-	})
+		handlers.ShortenUrlHandler(w, r, storage, &MockCache{})
+	},
+	)
 
 	router.ServeHTTP(rr, req)
 	return rr
