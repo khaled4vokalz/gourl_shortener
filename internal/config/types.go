@@ -5,6 +5,11 @@ type ServerConfig struct {
 	Port string `yaml:"port"`
 }
 
+type ShortenerSettings struct {
+	Length     int8 `yaml:"length"`
+	MaxAttempt int8 `yaml:"max_attempt"`
+}
+
 type CacheConfig struct {
 	Host     string `yaml:"host"`
 	Port     string `yaml:"port"`
@@ -15,7 +20,8 @@ type CacheConfig struct {
 }
 
 type Config struct {
-	Server         ServerConfig `yaml:"server"`
-	Db_Conn_String string       `yaml:"db_conn_string"`
-	Cache          CacheConfig  `yaml:"cache"`
+	Server         ServerConfig      `yaml:"server"`
+	Db_Conn_String string            `yaml:"db_conn_string"`
+	Cache          CacheConfig       `yaml:"cache"`
+	ShortenerProps ShortenerSettings `yaml:"shortener_props"`
 }

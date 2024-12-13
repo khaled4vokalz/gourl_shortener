@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/khaled4vokalz/gourl_shortener/internal/config"
 	"github.com/khaled4vokalz/gourl_shortener/internal/db"
 	"github.com/khaled4vokalz/gourl_shortener/internal/handlers"
 )
@@ -34,7 +35,7 @@ func TestShortenUrlHandler(t *testing.T) {
 		t.Errorf("Expected status 200 but got %v", status)
 	}
 
-	expected := `{"shortened_url":"http://localhost:8080/19"}`
+	expected := `{"shortened_url":"http://localhost:8080/sRVrAaAE"}`
 	if strings.TrimRight(rr.Body.String(), "\n") != expected {
 		t.Errorf("Expected body %v but got %v", expected, rr.Body.String())
 	}
@@ -72,7 +73,7 @@ func performPOSTReq(reqBody map[string]string, t *testing.T) *httptest.ResponseR
 
 	router := http.NewServeMux()
 	router.HandleFunc("/shorten", func(w http.ResponseWriter, r *http.Request) {
-		handlers.ShortenUrlHandler(w, r, storage, &MockCache{})
+		handlers.ShortenUrlHandler(w, r, storage, &MockCache{}, config.ShortenerSettings{Length: 6})
 	},
 	)
 

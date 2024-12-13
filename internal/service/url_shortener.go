@@ -1,10 +1,13 @@
 package service
 
-import "fmt"
+import (
+	"crypto/sha256"
 
-func GenerateShortenedURL(original string) string {
-	// TODO: starting with just the `length` of the provided url.
-	// but this is never a solid solution :D :D
-	// plan is to generate some sort of unique key for each URL, some sort of hash
-	return fmt.Sprintf("%v", len(original))
+	"github.com/jxskiss/base62"
+)
+
+func GenerateShortenedURL(original string, bytes_to_take int8) string {
+	hash := sha256.Sum256([]byte(original))
+	encoded := base62.EncodeToString(hash[:bytes_to_take])
+	return encoded
 }

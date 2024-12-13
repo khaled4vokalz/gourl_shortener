@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/khaled4vokalz/gourl_shortener/internal/cache"
+	"github.com/khaled4vokalz/gourl_shortener/internal/config"
 	"github.com/khaled4vokalz/gourl_shortener/internal/db"
 	"github.com/khaled4vokalz/gourl_shortener/internal/service"
 	"github.com/khaled4vokalz/gourl_shortener/internal/utils"
@@ -16,7 +17,7 @@ type Request struct {
 	URL string `json:"url"` // I like this tag thing in go :+1:
 }
 
-func ShortenUrlHandler(w http.ResponseWriter, r *http.Request, storage db.Storage, cache cache.Cache) {
+func ShortenUrlHandler(w http.ResponseWriter, r *http.Request, storage db.Storage, cache cache.Cache, settings config.ShortenerSettings) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
@@ -40,7 +41,21 @@ func ShortenUrlHandler(w http.ResponseWriter, r *http.Request, storage db.Storag
 	} else if host := r.Host; host != "" {
 		baseURL = fmt.Sprintf("http://%s", host)
 	}
-	shortened := service.GenerateShortenedURL(request.URL)
+	length := settings.Length
+	shortened := service.GenerateShortenedURL(request.URL, settings.Length)
+	_, exists := storage.Get(shortened)
+	var attempt_count int8 = 1
+	for exists == true {
+		length++
+		shortened = service.GenerateShortenedURL(request.URL, length)
+		_, exists = storage.Get(shortened)
+		if attempt_count > settings.MaxAttempt {
+			// bail out, we can not try more than allowed max attempt
+			http.Error(w, fmt.Sprintf("Failed to generate a unique URL, attempted %d times :(", settings.MaxAttempt), http.StatusInternalServerError)
+			return
+		}
+		attempt_count++
+	}
 
 	err := storage.Save(shortened, request.URL)
 	if err != nil {

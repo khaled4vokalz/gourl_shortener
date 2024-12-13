@@ -38,7 +38,7 @@ func main() {
 	cache := cache.GetCache(loaded_config.Cache)
 
 	http.HandleFunc("/shorten", func(w http.ResponseWriter, r *http.Request) {
-		handlers.ShortenUrlHandler(w, r, storage, cache)
+		handlers.ShortenUrlHandler(w, r, storage, cache, loaded_config.ShortenerProps)
 	})
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasPrefix(r.URL.Path, "/") {

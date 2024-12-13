@@ -8,3 +8,6 @@ cache:
   database: 0
   username: <user>
   password: <pass>
+shortener_props:
+  length: 6
+  max_attempt: 5
