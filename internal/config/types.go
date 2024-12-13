@@ -6,6 +6,6 @@ type ServerConfig struct {
 }
 
 type Config struct {
-	Server ServerConfig `yaml:"server"`
-	Domain string       `yaml:"domain"`
+	Server         ServerConfig `yaml:"server"`
+	Db_Conn_String string       `yaml:"db_conn_string"`
 }

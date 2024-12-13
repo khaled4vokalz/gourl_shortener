@@ -20,10 +20,18 @@ func main() {
 	}
 
 	config, _ := config_loader.LoadConfig(fmt.Sprintf("configuration/%s.yaml", strings.ToLower(env)))
-	log.Print(config.Server)
 
 	// DI :D
-	storage := db.NewInMemoryDb()
+	var storage db.Storage
+	var error error
+	if config.Db_Conn_String != "" {
+		storage, error = db.NewPostgresDb(config.Db_Conn_String)
+		if error != nil {
+			log.Fatalf("Failed to initialize postgresDB :: %s", error)
+		}
+	} else {
+		storage = db.NewInMemoryDb()
+	}
 
 	http.HandleFunc("/shorten", func(w http.ResponseWriter, r *http.Request) {
 		handlers.ShortenUrlHandler(w, r, storage)
