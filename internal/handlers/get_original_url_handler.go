@@ -41,5 +41,5 @@ func GetOriginalUrlHandler(w http.ResponseWriter, r *http.Request, storage db.St
 		w.Header().Set("X-Cache-Status", "Hit")
 	}
 
-	http.Redirect(w, r, originalURL, http.StatusFound)
+	http.Redirect(w, r, originalURL, http.StatusPermanentRedirect)
 }
