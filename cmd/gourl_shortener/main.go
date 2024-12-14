@@ -22,19 +22,10 @@ func main() {
 
 	loaded_config, _ := config_loader.LoadConfig(fmt.Sprintf("configuration/%s.yaml", strings.ToLower(env)))
 
-	// DI :D
-	var storage db.Storage
-
-	var error error
-	if loaded_config.Db_Conn_String != "" {
-		storage, error = db.NewPostgresDb(loaded_config.Db_Conn_String)
-		if error != nil {
-			log.Fatalf("Failed to initialize postgresDB :: %s", error)
-		}
-	} else {
-		storage = db.NewInMemoryDb()
+	storage, err := db.GetDb(loaded_config.Storage)
+	if err != nil {
+		log.Fatalf("failed to initialize storage: %s", err)
 	}
-
 	cache := cache.GetCache(loaded_config.Cache)
 
 	http.HandleFunc("/shorten", func(w http.ResponseWriter, r *http.Request) {

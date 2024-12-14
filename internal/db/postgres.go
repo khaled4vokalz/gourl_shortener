@@ -11,7 +11,7 @@ type PostgresDb struct {
 	db *sql.DB
 }
 
-func NewPostgresDb(connectionString string) (*PostgresDb, error) {
+func NewPostgresDb(connectionString string) (Storage, error) {
 	db, err := sql.Open("postgres", connectionString)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to PostgreSQL: %v", err)

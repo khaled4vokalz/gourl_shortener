@@ -103,13 +103,14 @@ Configuration can be provided via YAML files or environment variables, currently
 server:
   host: localhost
   port: 8080
-db_conn_string: "user=postgres password=<pass> dbname=gourl_shortener sslmode=disable"
+storage:
+  type: postgres
+  db_conn_string: "user=shortener password=<pass> dbname=gourl_shortener sslmode=disable"
 cache:
+  enabled: true
   host: localhost
   port: 6379
   database: 0
-  username: <user>
-  password: <pass>
 shortener_props:
   length: 6 # the total bytes that should be considered from the SHA256 hash of the url
   max_attempt: 5 # maximum attempt the service should take when key collision happens for a url
@@ -137,7 +138,6 @@ go test ./...
 - [] Add support for Environment variables
 - [] Add docker support
 - [] House keeping
-  - [] Use factories for db package
   - [] Provide default values for the configurations, probably my having a separate config manager
 
 ## License

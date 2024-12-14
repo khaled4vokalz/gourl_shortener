@@ -10,6 +10,11 @@ type ShortenerSettings struct {
 	MaxAttempt int8 `yaml:"max_attempt"`
 }
 
+type StorageConfig struct {
+	Type           string `yaml:"type"`
+	Db_Conn_String string `yaml:"db_conn_string"`
+}
+
 type CacheConfig struct {
 	Enabled  bool   `yaml:"enabled"`
 	Host     string `yaml:"host"`
@@ -22,7 +27,7 @@ type CacheConfig struct {
 
 type Config struct {
 	Server         ServerConfig      `yaml:"server"`
-	Db_Conn_String string            `yaml:"db_conn_string"`
 	Cache          CacheConfig       `yaml:"cache"`
+	Storage        StorageConfig     `yaml:"storage"`
 	ShortenerProps ShortenerSettings `yaml:"shortener_props"`
 }

@@ -1,7 +1,10 @@
 server:
   host: localhost
   port: 8080
-db_conn_string: "user=postgres password=<pass> dbname=gourl_shortener sslmode=disable"
+storage:
+  type: in-memory
+  # only applicable for other database options other than in-memory
+  # db_conn_string: "user=postgres password=<pass> dbname=gourl_shortener sslmode=disable"
 cache:
   enabled: false
   # only valid for redis options

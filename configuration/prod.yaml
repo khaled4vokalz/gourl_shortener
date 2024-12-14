@@ -1,15 +1,14 @@
 server:
   host: 0.0.0.0
-  port: 443
-db_conn_string: "user=postgres password=<pass> dbname=gourl_shortener sslmode=disable"
+  port: 8080
+storage:
+  type: postgres
+  db_conn_string: "user=postgres dbname=gourl_shortener sslmode=disable"
 cache:
-  enabled: false
-  # only valid for redis options
-  # host: localhost
-  # port: 6379
-  # database: 0
-  # username: <user>
-  # password: <pass>
+  enabled: true
+  host: localhost
+  port: 6379
+  database: 0
 shortener_props:
   length: 6
   max_attempt: 5

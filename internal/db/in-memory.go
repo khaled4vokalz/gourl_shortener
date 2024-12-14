@@ -9,7 +9,7 @@ type InMemoryDb struct {
 	mu    sync.Mutex // a MUTEX is needed to keep the store updates threadsafe
 }
 
-func NewInMemoryDb() *InMemoryDb {
+func NewInMemoryDb() Storage {
 	return &InMemoryDb{
 		store: make(map[string]string),
 	}
