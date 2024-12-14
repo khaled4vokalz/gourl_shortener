@@ -11,6 +11,7 @@ type ShortenerSettings struct {
 }
 
 type CacheConfig struct {
+	Enabled  bool   `yaml:"enabled"`
 	Host     string `yaml:"host"`
 	Port     string `yaml:"port"`
 	Database int    `yaml:"database"`
