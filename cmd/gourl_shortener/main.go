@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/khaled4vokalz/gourl_shortener/internal/cache"
@@ -14,13 +12,7 @@ import (
 )
 
 func main() {
-	LoadEnv()
-	env := os.Getenv("ENVIRONMENT")
-	if env == "" {
-		env = "DEV"
-	}
-
-	loaded_config, _ := config_loader.LoadConfig(fmt.Sprintf("configuration/%s.yaml", strings.ToLower(env)))
+	loaded_config, _ := config_loader.LoadConfig()
 
 	storage, err := db.GetDb(loaded_config.Storage)
 	if err != nil {
