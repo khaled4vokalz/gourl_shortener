@@ -18,36 +18,44 @@ This project is a URL Shortener service implemented in Go. It provides RESTful A
 - [Redis](https://redis.io/) for caching (optional, but recommended)
 - [PostgreSQL](https://www.postgresql.org/) for persistent storage (optional)
 - [Make](https://www.gnu.org/software/make/manual/make.html) - optional
+- [Docker](https://www.docker.com/) - optional
 
 ## Running the app
 
-1. **Clone the repository:**
+**Clone the repository:**
 
-   ```bash
-   git clone https://github.com/khaled4vokalz/gourl_shortener.git
-   cd gourl_shortener
-   ```
+```bash
+git clone https://github.com/khaled4vokalz/gourl_shortener.git
+cd gourl_shortener
+```
 
-2. **Install dependencies:**
+- **Bare Metal:**
 
-   ```bash
-   go mod tidy
-   ```
+  - **install dependencies:**
 
-3. **Set up configuration:**
-   Create a configuration file in YAML format or use environment variables for settings like the port, database, and cache.
+  ```bash
+  go mod tidy
+  ```
 
-4. **Run the application:**
+  - **set up configuration:**
+    create a configuration file in yaml format or use environment variables for settings like the port, database, and cache.
+  - If you're using postgres as storage option, then run the `scripts/init-db-script.sh` script, so that needed schemas are created. Make sure to pass in the `DB_USER`, `DB_PASSWORD` and `DB_NAME` envs.
 
-   ```bash
-   make run
-   ```
+  - **run the application:**
 
-   If you don't have `make` you can alternatively use
+    ```bash
+    make run
+    ```
 
-   ```bash
+    if you don't have `make` you can alternatively use
+
+    ```bash
     go run ./cmd/gourl_shortener
-   ```
+    ```
+
+- **Docker**
+
+  Just do `POSTGRES_PASSWORD=<your-postgres-pass> DB_PASSWORD=<your-db-pass> docker compose up -d`, it should spin up the containers with needed database and tables in it. The application APIs will be exposed at port `8080`
 
 ## API Endpoints
 
@@ -135,8 +143,10 @@ go test ./...
 - [] Implement analytics for shortened URLs (e.g., number of clicks)
 - [] Add expiration time
 - [] Add a web UI for managing shortened URLs
-- [] Add support for Environment variables
-- [] Add docker support
+- [] Add support for Environment variables in the config files
+- [x] Add docker support
+- [] Add logging
+- [] Health-check
 - [] House keeping
   - [] Provide default values for the configurations, probably my having a separate config manager
 
