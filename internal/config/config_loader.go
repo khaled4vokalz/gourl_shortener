@@ -6,8 +6,13 @@ import (
 	"strings"
 
 	"github.com/khaled4vokalz/gourl_shortener/internal/common"
-	"gopkg.in/yaml.v3"
+	"github.com/knadh/koanf"
+	"github.com/knadh/koanf/parsers/yaml"
+	"github.com/knadh/koanf/providers/env"
+	"github.com/knadh/koanf/providers/file"
 )
+
+const ENV_PREFIX = "GOURLAPP_"
 
 func getPath() string {
 	common.LoadEnv()
@@ -23,16 +28,22 @@ func getPath() string {
 }
 
 func LoadConfig() (Config, error) {
+	k := koanf.New(".")
 	var config Config
 	filePath := getPath()
-	data, err := os.ReadFile(filePath)
-	if err != nil {
-		return config, fmt.Errorf("error reading config file: %v", err)
+	if err := k.Load(file.Provider(filePath), yaml.Parser()); err != nil {
+		fmt.Printf("Error loading YAML file: %v\n", err)
+		return Config{}, err
 	}
 
-	err = yaml.Unmarshal(data, &config)
-	if err != nil {
-		return config, fmt.Errorf("error unmarshalling YAML: %v", err)
+	k.Load(env.Provider(ENV_PREFIX, ".", func(s string) string {
+		return strings.Replace(
+			strings.TrimPrefix(s, ENV_PREFIX), "_", ".", -1)
+	}), nil)
+
+	if err := k.Unmarshal("", &config); err != nil {
+		fmt.Printf("Error unmarshaling config: %v\n", err)
+		return Config{}, err
 	}
 
 	return config, nil

@@ -4,7 +4,7 @@ server:
 storage:
   type: in-memory
   # only applicable for other database options other than in-memory
-  # db_conn_string: "user=postgres password=<pass> dbname=gourl_shortener sslmode=disable"
+  # dbConnString: "user=postgres password=<pass> dbname=gourl_shortener sslmode=disable"
 cache:
   enabled: false
   # only valid for redis options
@@ -13,6 +13,6 @@ cache:
   # database: 0
   # username: <user>
   # password: <pass>
-shortener_props:
+shortenerProps:
   length: 6
-  max_attempt: 5
+  maxAttempt: 5

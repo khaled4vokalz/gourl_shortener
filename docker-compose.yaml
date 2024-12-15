@@ -44,5 +44,9 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    environment:
+      GOURLAPP_storage_dbConnString: postgres://shortener:<DB_PASSWORD>@postgres:5432/gourl_shortener?sslmode=disable
+      GOURLAPP_storage_type: postgres
+      GOURLAPP_cache_host: redis
     ports:
       - "8080:8080"
