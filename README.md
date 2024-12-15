@@ -113,15 +113,15 @@ server:
   port: 8080
 storage:
   type: postgres
-  db_conn_string: "user=shortener password=<pass> dbname=gourl_shortener sslmode=disable"
+  dbConnString: "user=shortener password=<pass> dbname=gourl_shortener sslmode=disable"
 cache:
   enabled: true
   host: localhost
   port: 6379
   database: 0
-shortener_props:
+shortenerProps:
   length: 6 # the total bytes that should be considered from the SHA256 hash of the url
-  max_attempt: 5 # maximum attempt the service should take when key collision happens for a url
+  maxAttempt: 5 # maximum attempt the service should take when key collision happens for a url
 ```
 
 ## Testing
@@ -143,7 +143,7 @@ go test ./...
 - [] Implement analytics for shortened URLs (e.g., number of clicks)
 - [] Add expiration time
 - [] Add a web UI for managing shortened URLs
-- [] Add support for Environment variables in the config files
+- [x] Add support for Environment variables in the config files
 - [x] Add docker support
 - [] Add logging
 - [] Health-check

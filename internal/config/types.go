@@ -1,33 +1,33 @@
 package config
 
 type ServerConfig struct {
-	Host string `yaml:"host"`
-	Port string `yaml:"port"`
+	Host string `koanf:"host"`
+	Port string `koanf:"port"`
 }
 
 type ShortenerSettings struct {
-	Length     int8 `yaml:"length"`
-	MaxAttempt int8 `yaml:"max_attempt"`
+	Length     int8 `koanf:"length"`
+	MaxAttempt int8 `koanf:"maxAttempt"`
 }
 
 type StorageConfig struct {
-	Type           string `yaml:"type"`
-	Db_Conn_String string `yaml:"db_conn_string"`
+	Type           string `koanf:"type"`
+	Db_Conn_String string `koanf:"dbConnString"`
 }
 
 type CacheConfig struct {
-	Enabled  bool   `yaml:"enabled"`
-	Host     string `yaml:"host"`
-	Port     string `yaml:"port"`
-	Database int    `yaml:"database"`
-	TTL      int    `yaml:"ttl"`
-	Username string `yaml:"username"` // TODO: not supported yet
-	Password string `yaml:"password"` // TODO: not supported yet
+	Enabled  bool   `koanf:"enabled"`
+	Host     string `koanf:"host"`
+	Port     string `koanf:"port"`
+	Database int    `koanf:"database"`
+	TTL      int    `koanf:"ttl"`
+	Username string `koanf:"username"` // TODO: not supported yet
+	Password string `koanf:"password"` // TODO: not supported yet
 }
 
 type Config struct {
-	Server         ServerConfig      `yaml:"server"`
-	Cache          CacheConfig       `yaml:"cache"`
-	Storage        StorageConfig     `yaml:"storage"`
-	ShortenerProps ShortenerSettings `yaml:"shortener_props"`
+	Server         ServerConfig      `koanf:"server"`
+	Cache          CacheConfig       `koanf:"cache"`
+	Storage        StorageConfig     `koanf:"storage"`
+	ShortenerProps ShortenerSettings `koanf:"shortenerProps"`
 }
