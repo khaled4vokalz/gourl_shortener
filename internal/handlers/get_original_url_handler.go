@@ -30,12 +30,12 @@ func GetOriginalUrlHandler(w http.ResponseWriter, r *http.Request, storage db.St
 
 	if err == errors.NotFound {
 		// Cache miss, fallback to database
-		originalURL, get_err := storage.Get(key)
-		if get_err == errors.NotFound {
+		originalURL, err = storage.Get(key)
+		if err == errors.NotFound {
 			http.Error(w, fmt.Sprintf("URL not found for key: %s", key), http.StatusNotFound)
 			return
-		} else if get_err != nil {
-			logger.GetLogger().Errorw(fmt.Sprintf("Failed to query database for key '%s'", key), "request-id", requestId, "error", get_err)
+		} else if err != nil {
+			logger.GetLogger().Errorw(fmt.Sprintf("Failed to query database for key '%s'", key), "request-id", requestId, "error", err)
 			http.Error(w, "Error fetching from database", http.StatusInternalServerError)
 			return
 		}
