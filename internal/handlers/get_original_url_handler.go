@@ -9,9 +9,12 @@ import (
 	"github.com/khaled4vokalz/gourl_shortener/internal/cache"
 	errors "github.com/khaled4vokalz/gourl_shortener/internal/common"
 	"github.com/khaled4vokalz/gourl_shortener/internal/db"
+	logger "github.com/khaled4vokalz/gourl_shortener/internal/logging"
+	"github.com/khaled4vokalz/gourl_shortener/internal/middlewares"
 )
 
 func GetOriginalUrlHandler(w http.ResponseWriter, r *http.Request, storage db.Storage, cache cache.Cache) {
+	log := logger.GetLogger()
 	parts := strings.Split(r.URL.Path, "/")
 	if len(parts) < 2 {
 		http.Error(w, "Invalid URL", http.StatusBadRequest)
@@ -23,11 +26,17 @@ func GetOriginalUrlHandler(w http.ResponseWriter, r *http.Request, storage db.St
 	// is it in the cache?
 	originalURL, err := cache.Get(key)
 
+	var requestId = middlewares.GetRequestID(r.Context())
+
 	if err == errors.NotFound {
 		// Cache miss, fallback to database
-		originalURL, exists := storage.Get(key)
-		if exists == false {
+		originalURL, get_err := storage.Get(key)
+		if get_err == errors.NotFound {
 			http.Error(w, fmt.Sprintf("URL not found for key: %s", key), http.StatusNotFound)
+			return
+		} else if get_err != nil {
+			logger.GetLogger().Errorw(fmt.Sprintf("Failed to query database for key '%s'", key), "request-id", requestId, "error", get_err)
+			http.Error(w, "Error fetching from database", http.StatusInternalServerError)
 			return
 		}
 		w.Header().Set("X-Cache-Status", "Miss")
@@ -35,11 +44,13 @@ func GetOriginalUrlHandler(w http.ResponseWriter, r *http.Request, storage db.St
 		// Cache the URL (keep it for 10 minutes now. TODO: make this configurable)
 		cache.Set(key, originalURL, 10*time.Minute)
 	} else if err != nil {
+		logger.GetLogger().Errorw(fmt.Sprintf("Failed to query cache for key '%s'", key), "request-id", requestId, "error", err)
 		http.Error(w, "Error fetching from cache", http.StatusInternalServerError)
 		return
 	} else {
 		w.Header().Set("X-Cache-Status", "Hit")
 	}
 
+	log.Debugw(fmt.Sprintf("Redirect url is %s", originalURL), "request-id", requestId)
 	http.Redirect(w, r, originalURL, http.StatusPermanentRedirect)
 }

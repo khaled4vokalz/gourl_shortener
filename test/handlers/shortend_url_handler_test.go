@@ -26,6 +26,14 @@ func (m *MockCache) Get(shortened string) (string, error) {
 }
 
 func TestShortenUrlHandler(t *testing.T) {
+	backup := config.GetConfig
+	defer func() { config.GetConfig = backup }()
+	config.GetConfig = func() *config.Config {
+		return &config.Config{
+			Environment: "dev",
+		}
+	}
+
 	reqBody := map[string]string{
 		"url": "https://example.com",
 	}
@@ -42,6 +50,14 @@ func TestShortenUrlHandler(t *testing.T) {
 }
 
 func TestShortenUrlHandlerBadRequest(t *testing.T) {
+	backup := config.GetConfig
+	defer func() { config.GetConfig = backup }()
+	config.GetConfig = func() *config.Config {
+		return &config.Config{
+			Environment: "dev",
+		}
+	}
+
 	reqBody := map[string]string{
 		"url": "https://",
 	}
@@ -58,7 +74,7 @@ func TestShortenUrlHandlerBadRequest(t *testing.T) {
 }
 
 func performPOSTReq(reqBody map[string]string, t *testing.T) *httptest.ResponseRecorder {
-	storage := db.NewInMemoryDb()
+	storage, err := db.NewInMemoryDb()
 
 	reqBodyJson, err := json.Marshal(reqBody)
 	if err != nil {

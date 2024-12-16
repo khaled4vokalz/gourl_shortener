@@ -14,26 +14,33 @@ import (
 
 const ENV_PREFIX = "GOURLAPP_"
 
+var singleton *Config
+
 func getPath() string {
 	common.LoadEnv()
 	config_path := os.Getenv("CONFIG_PATH")
-	env := os.Getenv("ENVIRONMENT")
-	if env == "" {
-		env = "dev"
-	}
+
 	if config_path == "" {
-		config_path = fmt.Sprintf("configuration/%s.yaml", strings.ToLower(env))
+		config_path = "configuration/dev.yaml"
 	}
 	return config_path
 }
 
-func LoadConfig() (Config, error) {
+// TODO: this approach is not good, now anyone will be able to change this.
+// this was done like this, so that it can be mocked in the tests
+var GetConfig = func() *Config {
+	if singleton == nil {
+		LoadConfig()
+	}
+	return singleton
+}
+
+func LoadConfig() (*Config, error) {
 	k := koanf.New(".")
 	var config Config
 	filePath := getPath()
 	if err := k.Load(file.Provider(filePath), yaml.Parser()); err != nil {
-		fmt.Printf("Error loading YAML file: %v\n", err)
-		return Config{}, err
+		return nil, fmt.Errorf("Error loading YAML file: %v\n", err)
 	}
 
 	k.Load(env.Provider(ENV_PREFIX, ".", func(s string) string {
@@ -42,9 +49,12 @@ func LoadConfig() (Config, error) {
 	}), nil)
 
 	if err := k.Unmarshal("", &config); err != nil {
-		fmt.Printf("Error unmarshaling config: %v\n", err)
-		return Config{}, err
+		return nil, fmt.Errorf("Error unmarshaling config: %v\n", err)
 	}
+	if config.Environment == "" {
+		config.Environment = "prod"
+	}
+	singleton = &config
 
-	return config, nil
+	return singleton, nil
 }

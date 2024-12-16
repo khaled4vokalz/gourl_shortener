@@ -122,6 +122,7 @@ cache:
 shortenerProps:
   length: 6 # the total bytes that should be considered from the SHA256 hash of the url
   maxAttempt: 5 # maximum attempt the service should take when key collision happens for a url
+environment: dev # the environment of the application, either `dev` or `prod`.
 ```
 
 ## Testing
@@ -145,7 +146,7 @@ go test ./...
 - [] Add a web UI for managing shortened URLs
 - [x] Add support for Environment variables in the config files
 - [x] Add docker support
-- [] Add logging
+- [x] Add logging
 - [] Health-check
 - [] House keeping
   - [] Provide default values for the configurations, probably my having a separate config manager

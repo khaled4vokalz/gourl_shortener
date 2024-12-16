@@ -30,4 +30,5 @@ type Config struct {
 	Cache          CacheConfig       `koanf:"cache"`
 	Storage        StorageConfig     `koanf:"storage"`
 	ShortenerProps ShortenerSettings `koanf:"shortenerProps"`
+	Environment    string            `koanf:"environment"`
 }

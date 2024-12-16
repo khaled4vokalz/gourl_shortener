@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/khaled4vokalz/gourl_shortener/internal/common"
+	logger "github.com/khaled4vokalz/gourl_shortener/internal/logging"
 	_ "github.com/lib/pq" // needed driver for go to be able to work with PostgresDb
 )
 
@@ -11,7 +13,7 @@ type PostgresDb struct {
 	db *sql.DB
 }
 
-func NewPostgresDb(connectionString string) (Storage, error) {
+func NewPostgresDb(connectionString string) (*PostgresDb, error) {
 	db, err := sql.Open("postgres", connectionString)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to PostgreSQL: %v", err)
@@ -29,14 +31,12 @@ func (db *PostgresDb) Save(shortened, original string) error {
 	return err
 }
 
-func (db *PostgresDb) Get(shortened string) (string, bool) {
+func (db *PostgresDb) Get(shortened string) (string, error) {
 	var original string
 	err := db.db.QueryRow("SELECT original FROM urls WHERE shortened = $1", shortened).Scan(&original)
 	if err == sql.ErrNoRows {
-		return "", false
+		logger.GetLogger().Debug(fmt.Sprintf("No url found for key '%s'", shortened))
+		return "", common.NotFound
 	}
-	if err != nil {
-		return "", false
-	}
-	return original, true
+	return original, err
 }
