@@ -16,3 +16,4 @@ cache:
 shortenerProps:
   length: 6
   maxAttempt: 5
+environment: dev

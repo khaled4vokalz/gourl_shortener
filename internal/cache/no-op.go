@@ -6,8 +6,8 @@ import (
 	errors "github.com/khaled4vokalz/gourl_shortener/internal/common"
 )
 
-func NewNoOpCache() Cache {
-	return &NoOpCache{}
+func NewNoOpCache() (*NoOpCache, error) {
+	return &NoOpCache{}, nil
 }
 
 func (r *NoOpCache) Set(key string, value string, expiration time.Duration) error {

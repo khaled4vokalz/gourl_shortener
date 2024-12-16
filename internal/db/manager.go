@@ -14,7 +14,7 @@ var (
 
 func GetDb(conf config.StorageConfig) (Storage, error) {
 	if conf.Type == "in-memory" {
-		return NewInMemoryDb(), nil
+		return NewInMemoryDb()
 	} else if conf.Type == "postgres" {
 		return NewPostgresDb(conf.Db_Conn_String)
 	} else {
