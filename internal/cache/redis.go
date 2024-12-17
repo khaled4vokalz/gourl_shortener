@@ -44,3 +44,10 @@ func (r *RedisCache) Get(key string) (string, error) {
 		return item, err
 	}
 }
+
+func (r *RedisCache) IsAlive() bool {
+	if err := r.Client.Ping(ctx).Err(); err != nil {
+		return false
+	}
+	return true
+}

@@ -103,6 +103,22 @@ Response headers:
 < Location: http://example.com
 ```
 
+### Health Check
+
+**GET** `/health/live`
+
+Response (with status code `200`):
+
+```json
+{ "databaes_is_live": true, "cache_is_alive": true }
+```
+
+Response (with status code `500`, in case either/all of the components are not alive):
+
+```json
+{ "databaes_is_live": true, "cache_is_alive": false }
+```
+
 ## Configuration
 
 Configuration can be provided via YAML files or environment variables, currently it only supports config file in the `configuration` directory having the same name of the ENVIRONMENT env. Example YAML configuration:
@@ -147,7 +163,7 @@ go test ./...
 - [x] Add support for Environment variables in the config files
 - [x] Add docker support
 - [x] Add logging
-- [] Health-check
+- [x] Health-check
 - [] House keeping
   - [] Provide default values for the configurations, probably my having a separate config manager
 

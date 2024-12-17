@@ -37,6 +37,9 @@ func main() {
 			handlers.GetOriginalUrlHandler(w, r, storage, cache)
 		}
 	})
+	mux.HandleFunc("/health/live", func(w http.ResponseWriter, r *http.Request) {
+		handlers.HealthCheckHandler(w, r, storage, cache)
+	})
 
 	port := loaded_config.Server.Port // TODO: this should have a default if not set
 	host := loaded_config.Server.Host // TODO: this should have a default if not set

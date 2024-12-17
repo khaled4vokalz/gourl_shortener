@@ -25,6 +25,10 @@ func (m *MockCache) Get(shortened string) (string, error) {
 	return "", nil
 }
 
+func (m *MockCache) IsAlive() bool {
+	return true
+}
+
 func TestShortenUrlHandler(t *testing.T) {
 	backup := config.GetConfig
 	defer func() { config.GetConfig = backup }()

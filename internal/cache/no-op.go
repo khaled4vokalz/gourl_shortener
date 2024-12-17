@@ -17,3 +17,7 @@ func (r *NoOpCache) Set(key string, value string, expiration time.Duration) erro
 func (r *NoOpCache) Get(key string) (string, error) {
 	return "", errors.NotFound
 }
+
+func (r *NoOpCache) IsAlive() bool {
+	return true
+}
