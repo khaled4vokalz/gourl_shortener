@@ -1,5 +1,7 @@
 package config
 
+import "time"
+
 type ServerConfig struct {
 	Host string `koanf:"host"`
 	Port string `koanf:"port"`
@@ -31,4 +33,6 @@ type Config struct {
 	Storage        StorageConfig     `koanf:"storage"`
 	ShortenerProps ShortenerSettings `koanf:"shortenerProps"`
 	Environment    string            `koanf:"environment"`
+	UrlsExpiresIn  string            `koanf:"urlsDefaultExpiry"`
+	UrlsExpiresAt  time.Time
 }

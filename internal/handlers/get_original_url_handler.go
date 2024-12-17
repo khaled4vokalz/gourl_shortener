@@ -34,6 +34,9 @@ func GetOriginalUrlHandler(w http.ResponseWriter, r *http.Request, storage db.St
 		if err == errors.NotFound {
 			http.Error(w, fmt.Sprintf("URL not found for key: %s", key), http.StatusNotFound)
 			return
+		} else if err == errors.Expired {
+			http.Error(w, fmt.Sprintf("URL expired key: %s", key), http.StatusGone)
+			return
 		} else if err != nil {
 			logger.GetLogger().Errorw(fmt.Sprintf("Failed to query database for key '%s'", key), "request-id", requestId, "error", err)
 			http.Error(w, "Error fetching from database", http.StatusInternalServerError)

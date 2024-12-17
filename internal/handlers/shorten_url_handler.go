@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/khaled4vokalz/gourl_shortener/internal/cache"
+	errors "github.com/khaled4vokalz/gourl_shortener/internal/common"
 	"github.com/khaled4vokalz/gourl_shortener/internal/config"
 	"github.com/khaled4vokalz/gourl_shortener/internal/db"
 	logger "github.com/khaled4vokalz/gourl_shortener/internal/logging"
@@ -16,7 +17,8 @@ import (
 )
 
 type Request struct {
-	URL string `json:"url"` // I like this tag thing in go :+1:
+	URL       string    `json:"url"`
+	ExpiresAt time.Time `json:"expires_at,omitempty"`
 }
 
 func ShortenUrlHandler(w http.ResponseWriter, r *http.Request, storage db.Storage, cache cache.Cache, settings config.ShortenerSettings) {
@@ -45,23 +47,32 @@ func ShortenUrlHandler(w http.ResponseWriter, r *http.Request, storage db.Storag
 		baseURL = fmt.Sprintf("http://%s", host)
 	}
 	length := settings.Length
-	shortened := service.GenerateShortenedURL(request.URL, settings.Length)
-	url, _ := storage.Get(shortened)
 	var attempt_count int8 = 1
-	for url != "" {
-		if attempt_count > settings.MaxAttempt {
+	var shortened string
+	for true {
+		shortened = service.GenerateShortenedURL(request.URL, length)
+		_, err := storage.Get(shortened)
+		if err == errors.NotFound || err == errors.Expired {
+			// so we don't have duplicates in the DB
+			break
+		} else if err != nil {
+			logger.GetLogger().Errorw(fmt.Sprintf("Failed to query database for key '%s'", shortened), "request-id", requestId, "error", err)
+			http.Error(w, "Error fetching from database", http.StatusInternalServerError)
+			return
+		} else if attempt_count > settings.MaxAttempt {
 			// bail out, we can not try more than allowed max attempt
+			// TODO: this doesn't look like a good solution, we should figure out a diffirent way
+			// so that we must be able to create a unique key
 			http.Error(w, fmt.Sprintf("Failed to generate a unique URL, attempted %d times :(", settings.MaxAttempt), http.StatusInternalServerError)
 			return
+		} else {
+			logger.GetLogger().Debugw(fmt.Sprintf("Key '%s' is not unique, generating new one.", shortened), "request-id", requestId, "url", request.URL)
+			attempt_count++
+			length++
 		}
-		logger.GetLogger().Debugw(fmt.Sprintf("Key '%s' is not unique, generating new one.", shortened), "request-id", requestId, "url", request.URL)
-		length++
-		shortened = service.GenerateShortenedURL(request.URL, length)
-		url, _ = storage.Get(shortened)
-		attempt_count++
 	}
 
-	err := storage.Save(shortened, request.URL)
+	err := storage.Save(shortened, request.URL, request.ExpiresAt)
 	if err != nil {
 		logger.GetLogger().Errorw(fmt.Sprintf("Failed to store URL '%s' in database.", request.URL), "request-id", requestId, "error", err)
 		http.Error(w, "Failed to store URL", http.StatusInternalServerError)
