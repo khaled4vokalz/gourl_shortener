@@ -158,7 +158,7 @@ go test ./...
 ## Roadmap
 
 - [] Implement analytics for shortened URLs (e.g., number of clicks)
-- [] Add expiration time
+- [x] Add expiration time
 - [] Add a web UI for managing shortened URLs
 - [x] Add support for Environment variables in the config files
 - [x] Add docker support

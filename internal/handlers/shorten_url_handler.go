@@ -16,7 +16,8 @@ import (
 )
 
 type Request struct {
-	URL string `json:"url"` // I like this tag thing in go :+1:
+	URL       string     `json:"url"`
+	ExpiresAt *time.Time `json:"expires_at"`
 }
 
 func ShortenUrlHandler(w http.ResponseWriter, r *http.Request, storage db.Storage, cache cache.Cache, settings config.ShortenerSettings) {
@@ -61,7 +62,7 @@ func ShortenUrlHandler(w http.ResponseWriter, r *http.Request, storage db.Storag
 		attempt_count++
 	}
 
-	err := storage.Save(shortened, request.URL)
+	err := storage.Save(shortened, request.URL, request.ExpiresAt)
 	if err != nil {
 		logger.GetLogger().Errorw(fmt.Sprintf("Failed to store URL '%s' in database.", request.URL), "request-id", requestId, "error", err)
 		http.Error(w, "Failed to store URL", http.StatusInternalServerError)

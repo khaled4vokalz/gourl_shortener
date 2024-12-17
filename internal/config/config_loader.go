@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/khaled4vokalz/gourl_shortener/internal/common"
+	"github.com/khaled4vokalz/gourl_shortener/internal/utils"
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/env"
@@ -53,6 +54,11 @@ func LoadConfig() (*Config, error) {
 	}
 	if config.Environment == "" {
 		config.Environment = "prod"
+	}
+	if config.UrlsExpiresIn != "" {
+		config.UrlsExpiresAt, _ = utils.ParseTime(config.UrlsExpiresIn)
+	} else {
+		config.UrlsExpiresAt, _ = utils.ParseTime("30d")
 	}
 	singleton = &config
 
