@@ -40,3 +40,10 @@ func (db *PostgresDb) Get(shortened string) (string, error) {
 	}
 	return original, err
 }
+
+func (db *PostgresDb) IsAlive() bool {
+	if err := db.db.Ping(); err != nil {
+		return false
+	}
+	return true
+}

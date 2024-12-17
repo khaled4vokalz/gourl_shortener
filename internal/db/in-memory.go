@@ -39,3 +39,7 @@ func (db *InMemoryDb) Get(shortened string) (string, error) {
 	}
 	return original, err
 }
+
+func (db *InMemoryDb) IsAlive() bool {
+	return true
+}
