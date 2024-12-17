@@ -17,7 +17,8 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
       id SERIAL PRIMARY KEY,
       shortened VARCHAR(20) NOT NULL UNIQUE,
       original TEXT NOT NULL,
-      created_at TIMESTAMP DEFAULT NOW()
+      created_at TIMESTAMP DEFAULT NOW(),
+      expires_at TIMESTAMP NOT NULL
   );
   CREATE INDEX idx_shortened ON urls(shortened);
   GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${db_user};
