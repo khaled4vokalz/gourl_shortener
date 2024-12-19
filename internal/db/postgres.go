@@ -28,10 +28,10 @@ func NewPostgresDb(connectionString string) (*PostgresDb, error) {
 	return &PostgresDb{db: db}, nil
 }
 
-func (db *PostgresDb) Save(shortened, original string, expiresAt *time.Time) error {
+func (db *PostgresDb) Save(shortened, original string, expiresAt time.Time) error {
 	expires := config.GetConfig().UrlsExpiresAt
-	if expiresAt != nil {
-		expires = *expiresAt
+	if !expiresAt.IsZero() {
+		expires = expiresAt
 	}
 	_, err := db.db.Exec("INSERT INTO urls (shortened, original, expires_at) VALUES ($1, $2, $3)", shortened, original, expires)
 	return err

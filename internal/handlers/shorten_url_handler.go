@@ -17,7 +17,7 @@ import (
 
 type Request struct {
 	URL       string     `json:"url"`
-	ExpiresAt *time.Time `json:"expires_at"`
+	ExpiresAt *time.Time `json:"expires_at,omitempty"`
 }
 
 func ShortenUrlHandler(w http.ResponseWriter, r *http.Request, storage db.Storage, cache cache.Cache, settings config.ShortenerSettings) {
@@ -35,6 +35,8 @@ func ShortenUrlHandler(w http.ResponseWriter, r *http.Request, storage db.Storag
 		return
 	}
 
+	logger.GetLogger().Infow("-----------------------", "r.expires_at", request)
+
 	if !utils.IsValidURL(request.URL) {
 		http.Error(w, "Invalid URL", http.StatusBadRequest)
 		return
@@ -47,7 +49,7 @@ func ShortenUrlHandler(w http.ResponseWriter, r *http.Request, storage db.Storag
 	}
 	length := settings.Length
 	shortened := service.GenerateShortenedURL(request.URL, settings.Length)
-	url, _ := storage.Get(shortened)
+	url, err := storage.Get(shortened)
 	var attempt_count int8 = 1
 	for url != "" {
 		if attempt_count > settings.MaxAttempt {
@@ -58,11 +60,16 @@ func ShortenUrlHandler(w http.ResponseWriter, r *http.Request, storage db.Storag
 		logger.GetLogger().Debugw(fmt.Sprintf("Key '%s' is not unique, generating new one.", shortened), "request-id", requestId, "url", request.URL)
 		length++
 		shortened = service.GenerateShortenedURL(request.URL, length)
-		url, _ = storage.Get(shortened)
+		url, err = storage.Get(shortened)
+		if err != nil {
+			logger.GetLogger().Errorw("Failed to get URL info from database", "error", err)
+			http.Error(w, fmt.Sprintf("Failed to generate a shortened URL"), http.StatusInternalServerError)
+			return
+		}
 		attempt_count++
 	}
 
-	err := storage.Save(shortened, request.URL, request.ExpiresAt)
+	err = storage.Save(shortened, request.URL, *request.ExpiresAt)
 	if err != nil {
 		logger.GetLogger().Errorw(fmt.Sprintf("Failed to store URL '%s' in database.", request.URL), "request-id", requestId, "error", err)
 		http.Error(w, "Failed to store URL", http.StatusInternalServerError)

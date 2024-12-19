@@ -18,7 +18,7 @@ type InMemoryDb struct {
 
 type ShortenedUrl struct {
 	URL       string
-	ExpiresAt *time.Time
+	ExpiresAt time.Time
 }
 
 func NewInMemoryDb() (*InMemoryDb, error) {
@@ -28,9 +28,9 @@ func NewInMemoryDb() (*InMemoryDb, error) {
 	}, nil
 }
 
-func (db *InMemoryDb) Save(shortened, original string, expiresAt *time.Time) error {
-	expires := &config.GetConfig().UrlsExpiresAt
-	if expiresAt != nil {
+func (db *InMemoryDb) Save(shortened, original string, expiresAt time.Time) error {
+	expires := config.GetConfig().UrlsExpiresAt
+	if !expiresAt.IsZero() {
 		expires = expiresAt
 	}
 	db.mu.Lock()
@@ -50,7 +50,7 @@ func (db *InMemoryDb) Get(shortened string) (string, error) {
 		logger.GetLogger().Debug(fmt.Sprintf("No url found for key '%s'", shortened))
 		return "", common.NotFound
 	}
-	if shortenedObj.ExpiresAt != nil && time.Now().After(*shortenedObj.ExpiresAt) {
+	if !shortenedObj.ExpiresAt.IsZero() && time.Now().After(shortenedObj.ExpiresAt) {
 		logger.GetLogger().Debug(fmt.Sprintf("URL '%s' for key '%s' has expired", shortenedObj.URL, shortened))
 		return "", common.Expired
 	}
