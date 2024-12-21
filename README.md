@@ -9,6 +9,7 @@
     - [Get Original URL](#get-original-url)
     - [Health Check](#health-check)
   - [Configuration](#configuration)
+  - [Override configurations using Environment Variables](#override-configurations-using-environment-variables)
   - [Testing](#testing)
   - [Roadmap](#roadmap)
   - [License](#license)
@@ -155,6 +156,10 @@ shortenerProps:
   maxAttempt: 5 # maximum attempt the service should take when key collision happens for a url
 environment: dev # the environment of the application, either `dev` or `prod`.
 ```
+
+## Override configurations using Environment Variables
+
+Any configuration mentioned above can be overridden using Environment variables using `GOURLAPP_` prefix and use the property tree separated by underscores (`_`). e.g. If we want to override `maxAttempt` configuration, we can set it like `GOURLAPP_shortenerProps_maxAttempt=10`
 
 ## Testing
 
