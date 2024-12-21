@@ -40,10 +40,8 @@ func ShortenUrlHandler(w http.ResponseWriter, r *http.Request, storage db.Storag
 		http.Error(w, "Invalid URL", http.StatusBadRequest)
 		return
 	}
-	baseURL := "http://localhost:8080" // Fallback in case Origin is not available
-	if origin := r.Header.Get("Origin"); origin != "" {
-		baseURL = origin
-	} else if host := r.Host; host != "" {
+	baseURL := "http://localhost:8080" // Fallback in case Host is not available
+	if host := r.Host; host != "" {
 		baseURL = fmt.Sprintf("http://%s", host)
 	}
 	length := settings.Length

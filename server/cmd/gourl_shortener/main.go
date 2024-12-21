@@ -44,7 +44,7 @@ func main() {
 	port := loaded_config.Server.Port // TODO: this should have a default if not set
 	host := loaded_config.Server.Host // TODO: this should have a default if not set
 
-	if err := http.ListenAndServe(host+":"+port, middlewares.RequestIDMiddleware(mux)); err != nil {
+	if err := http.ListenAndServe(host+":"+port, middlewares.AddCORSMiddleware(middlewares.AddRequestIDMiddleware(mux))); err != nil {
 		log.Fatal(fmt.Sprintf("Couldn't start the server because of: %s", err))
 	}
 }
