@@ -12,9 +12,10 @@
     - [Get Original URL](#get-original-url)
     - [Backend Health Check](#backend-health-check)
   - [Configuration](#configuration)
-  - [Override configurations using Environment Variables](#override-configurations-using-environment-variables)
+    - [Backend](#backend-1)
+    - [Frontend](#frontend-1)
   - [Testing](#testing)
-    - [Testing Backend](#testing-backend)
+    - [Backend](#backend-2)
   - [Roadmap](#roadmap)
   - [License](#license)
 
@@ -54,15 +55,15 @@ $ git clone https://github.com/khaled4vokalz/gourl_shortener.git
 
   - **get into server directory**
 
-  ```bash
-  $ cd gourl_shortener/server
-  ```
+    ```bash
+    $ cd gourl_shortener/server
+    ```
 
   - **install dependencies:**
 
-  ```bash
-  $ go mod tidy
-  ```
+    ```bash
+    $ go mod tidy
+    ```
 
   - **set up configuration:**
     create a configuration file in yaml format or use environment variables for settings like the port, database, and cache.
@@ -84,15 +85,15 @@ $ git clone https://github.com/khaled4vokalz/gourl_shortener.git
 
   - build the docker image
 
-  ```bash
-  $ docker build --tag go-url-shortener-server .
-  ```
+    ```bash
+    $ docker build --tag go-url-shortener-server .
+    ```
 
   - run the container
 
-  ```bash
-  $ docker run --detach --env GOURLAPP_storage_type=in-memory --env GOURLAPP_cache_enabled=false --name gourl_shortener --publish 8080:8080 go-url-shortener-server
-  ```
+    ```bash
+    $ docker run --detach --env GOURLAPP_storage_type=in-memory --env GOURLAPP_cache_enabled=false --name gourl_shortener --publish 8082:8080 go-url-shortener-server
+    ```
 
 ### Frontend
 
@@ -100,28 +101,59 @@ $ git clone https://github.com/khaled4vokalz/gourl_shortener.git
 
   - Get into the client directory
 
-  ```bash
-  $ cd client
-  ```
+    ```bash
+    $ cd client
+    ```
 
   - Install dependencies (use node 20+)
 
-  ```bash
-  $ nvm use 20.0.0
-  $ npm ci
-  ```
+    ```bash
+    $ nvm use 20.0.0
+    $ npm ci
+    ```
 
   - Start the app
 
-  ```bash
-  $ npm start
-  ```
+    We can set `REACT_APP_BACKEND_URL` to the url where the backend api is available, e.g. `REACT_APP_BACKEND_URL=http://localhost:8080` before running `npm start`. By default the app uses `http://localhost:8082` as the backend url.
 
-Runs the app in the development mode. Open [http://localhost:3000](http://localhost:3000) to view it in the browser. It's using Hot reload.
+    ```bash
+    $ npm start
+    ```
+
+  App should be running in development mode. Open [http://localhost:3000](http://localhost:3000) to view it in the browser. It's using Hot reload.
+
+- **Docker**
+
+  - Get into the client directory
+
+    ```bash
+    $ cd client
+    ```
+
+  - build the docker image
+
+    Build time arg `BACKEND_URL` may be set to override the default `http://localhost:8082` that the app uses as backend url.
+
+    ```bash
+    $ docker build --build-arg BACKEND_URL=http://url-where-backend-is-running:port --tag go-url-shortener-client .
+    ```
+
+  - run the container
+
+    ```bash
+    $ docker run --detach --name gourl_shortener_client --publish 3000:80 go-url-shortener-client
+    ```
+
+  Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ### Using docker-compose
 
-Running the below command should spin up the containers with needed database and tables in it. The application APIs will be exposed at port `8080`
+Running the below command should spin up the containers with needed database and tables in it.
+
+- The postgres db is listening at port `5433`
+- The redis db is listening at port `6380`
+- The backend is listening at port `8082`
+- The frontend app is listening at `3000`
 
 ```bash
 $ POSTGRES_PASSWORD=<your-postgres-pass> DB_PASSWORD=<your-db-pass> docker compose up --detach
@@ -138,13 +170,13 @@ $ POSTGRES_PASSWORD=<your-postgres-pass> DB_PASSWORD=<your-db-pass> docker compo
   Request:
 
   ```bash
-  curl --verbose --request POST --data '{"url": "http://example.com"}' localhost:8080/shorten
+  curl --verbose --request POST --data '{"url": "http://example.com"}' localhost:8082/shorten
   ```
 
   Response:
 
   ```json
-  { "shortened_url": "http://localhost:8080/CBXqmaO8" }
+  { "shortened_url": "http://localhost:8082/CBXqmaO8" }
   ```
 
 - with `Origin` header
@@ -152,7 +184,7 @@ $ POSTGRES_PASSWORD=<your-postgres-pass> DB_PASSWORD=<your-db-pass> docker compo
   Request:
 
   ```bash
-  curl --verbose --request POST --header "Origin: https://foo.com" --data '{"url": "http://example.com"}' localhost:8080/shorten
+  curl --verbose --request POST --header "Origin: https://foo.com" --data '{"url": "http://example.com"}' localhost:8082/shorten
   ```
 
   Response:
@@ -191,7 +223,9 @@ Response (with status code `500`, in case either/all of the components are not a
 
 ## Configuration
 
-Configuration can be provided via YAML files or environment variables, currently it only supports config file in the `configuration` directory having the same name of the ENVIRONMENT env. Example YAML configuration:
+### Backend
+
+- Configuration can be provided via YAML files or environment variables, currently it only supports config file in the `configuration` directory having the same name of the ENVIRONMENT env. Example YAML configuration:
 
 ```yaml
 server:
@@ -211,13 +245,17 @@ shortenerProps:
 environment: dev # the environment of the application, either `dev` or `prod`.
 ```
 
-## Override configurations using Environment Variables
+- Override configurations using Environment Variables
 
 Any configuration mentioned above can be overridden using Environment variables using `GOURLAPP_` prefix and use the property tree separated by underscores (`_`). e.g. If we want to override `maxAttempt` configuration, we can set it like `GOURLAPP_shortenerProps_maxAttempt=10`
 
+### Frontend
+
+- only `REACT_APP_BACKEND_URL` environment variable that can override the backend url the app should talk to
+
 ## Testing
 
-### Testing Backend
+### Backend
 
 Get into server directory
 
@@ -241,7 +279,7 @@ $ go test ./...
 
 - [] Implement analytics for shortened URLs (e.g., number of clicks)
 - [x] Add expiration time
-- [] Add a web UI for managing shortened URLs
+- [x] Add a web UI for managing shortened URLs
 - [x] Add support for Environment variables in the config files
 - [x] Add docker support
 - [x] Add logging
