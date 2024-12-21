@@ -165,7 +165,7 @@ $ POSTGRES_PASSWORD=<your-postgres-pass> DB_PASSWORD=<your-db-pass> docker compo
 
 **POST** `/shorten`
 
-- without `Origin` header
+- without `Host` header
 
   Request:
 
@@ -179,12 +179,12 @@ $ POSTGRES_PASSWORD=<your-postgres-pass> DB_PASSWORD=<your-db-pass> docker compo
   { "shortened_url": "http://localhost:8082/CBXqmaO8" }
   ```
 
-- with `Origin` header
+- with `Host` header
 
   Request:
 
   ```bash
-  curl --verbose --request POST --header "Origin: https://foo.com" --data '{"url": "http://example.com"}' localhost:8082/shorten
+  curl --verbose --request POST --header "Host: https://foo.com" --data '{"url": "http://example.com"}' localhost:8082/shorten
   ```
 
   Response:
