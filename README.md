@@ -1,3 +1,18 @@
+## Table of Contents
+
+- [URL Shortener in Go](#url-shortener-in-go)
+  - [Features](#features)
+  - [Prerequisites](#prerequisites)
+  - [Running the app](#running-the-app)
+  - [API Endpoints](#api-endpoints)
+    - [Shorten URL](#shorten-url)
+    - [Get Original URL](#get-original-url)
+    - [Health Check](#health-check)
+  - [Configuration](#configuration)
+  - [Testing](#testing)
+  - [Roadmap](#roadmap)
+  - [License](#license)
+
 # URL Shortener in Go
 
 This project is a URL Shortener service implemented in Go. It provides RESTful APIs to shorten long URLs and retrieve original URLs using a shortened identifier. The project uses an extensible design with support for multiple storage backends, caching, and configuration management. This is a Go 🐹 learning project for me
