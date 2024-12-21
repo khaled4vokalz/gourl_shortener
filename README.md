@@ -4,7 +4,8 @@
   - [Features](#features)
   - [Prerequisites](#prerequisites)
   - [Running the app](#running-the-app)
-    - [Only Backend](#only-backend)
+    - [Backend](#backend)
+    - [Frontend](#frontend)
     - [Using docker-compose](#using-docker-compose)
   - [API Endpoints](#api-endpoints)
     - [Shorten URL](#shorten-url)
@@ -47,7 +48,7 @@ This project is a URL Shortener service implemented in Go. It provides RESTful A
 $ git clone https://github.com/khaled4vokalz/gourl_shortener.git
 ```
 
-### Only Backend
+### Backend
 
 - **Bare Metal:**
 
@@ -92,6 +93,31 @@ $ git clone https://github.com/khaled4vokalz/gourl_shortener.git
   ```bash
   $ docker run --detach --env GOURLAPP_storage_type=in-memory --env GOURLAPP_cache_enabled=false --name gourl_shortener --publish 8080:8080 go-url-shortener-server
   ```
+
+### Frontend
+
+- **Bare Metal:**
+
+  - Get into the client directory
+
+  ```bash
+  $ cd client
+  ```
+
+  - Install dependencies (use node 20+)
+
+  ```bash
+  $ nvm use 20.0.0
+  $ npm ci
+  ```
+
+  - Start the app
+
+  ```bash
+  $ npm start
+  ```
+
+Runs the app in the development mode. Open [http://localhost:3000](http://localhost:3000) to view it in the browser. It's using Hot reload.
 
 ### Using docker-compose
 
