@@ -21,7 +21,7 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - ./scripts/:/docker-entrypoint-initdb.d/
+      - ./server/scripts/:/docker-entrypoint-initdb.d/
 
   redis:
     image: redis:7
@@ -36,7 +36,7 @@ services:
 
   go-app:
     build:
-      context: .
+      context: server
       dockerfile: Dockerfile
     container_name: gourl_shortener_app
     depends_on:

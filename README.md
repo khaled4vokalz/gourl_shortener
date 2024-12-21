@@ -4,13 +4,16 @@
   - [Features](#features)
   - [Prerequisites](#prerequisites)
   - [Running the app](#running-the-app)
+    - [Only Backend](#only-backend)
+    - [Using docker-compose](#using-docker-compose)
   - [API Endpoints](#api-endpoints)
     - [Shorten URL](#shorten-url)
     - [Get Original URL](#get-original-url)
-    - [Health Check](#health-check)
+    - [Backend Health Check](#backend-health-check)
   - [Configuration](#configuration)
   - [Override configurations using Environment Variables](#override-configurations-using-environment-variables)
   - [Testing](#testing)
+    - [Testing Backend](#testing-backend)
   - [Roadmap](#roadmap)
   - [License](#license)
 
@@ -41,16 +44,23 @@ This project is a URL Shortener service implemented in Go. It provides RESTful A
 **Clone the repository:**
 
 ```bash
-git clone https://github.com/khaled4vokalz/gourl_shortener.git
-cd gourl_shortener
+$ git clone https://github.com/khaled4vokalz/gourl_shortener.git
 ```
 
+### Only Backend
+
 - **Bare Metal:**
+
+  - **get into server directory**
+
+  ```bash
+  $ cd gourl_shortener/server
+  ```
 
   - **install dependencies:**
 
   ```bash
-  go mod tidy
+  $ go mod tidy
   ```
 
   - **set up configuration:**
@@ -60,18 +70,36 @@ cd gourl_shortener
   - **run the application:**
 
     ```bash
-    make run
+    $ make run
     ```
 
     if you don't have `make` you can alternatively use
 
     ```bash
-    go run ./cmd/gourl_shortener
+    $ go run ./cmd/gourl_shortener
     ```
 
 - **Docker**
 
-  Just do `POSTGRES_PASSWORD=<your-postgres-pass> DB_PASSWORD=<your-db-pass> docker compose up -d`, it should spin up the containers with needed database and tables in it. The application APIs will be exposed at port `8080`
+  - build the docker image
+
+  ```bash
+  $ docker build --tag go-url-shortener-server .
+  ```
+
+  - run the container
+
+  ```bash
+  $ docker run --detach --env GOURLAPP_storage_type=in-memory --env GOURLAPP_cache_enabled=false --name gourl_shortener --publish 8080:8080 go-url-shortener-server
+  ```
+
+### Using docker-compose
+
+Running the below command should spin up the containers with needed database and tables in it. The application APIs will be exposed at port `8080`
+
+```bash
+$ POSTGRES_PASSWORD=<your-postgres-pass> DB_PASSWORD=<your-db-pass> docker compose up --detach
+```
 
 ## API Endpoints
 
@@ -119,7 +147,7 @@ Response headers:
 < Location: http://example.com
 ```
 
-### Health Check
+### Backend Health Check
 
 **GET** `/health/live`
 
@@ -163,16 +191,24 @@ Any configuration mentioned above can be overridden using Environment variables 
 
 ## Testing
 
+### Testing Backend
+
+Get into server directory
+
+```bash
+$ cd gourl_shortener/server
+```
+
 Run unit tests with:
 
 ```bash
-make test
+$ make test
 ```
 
 If you don't have `make` you can alternatively use
 
 ```bash
-go test ./...
+$ go test ./...
 ```
 
 ## Roadmap
