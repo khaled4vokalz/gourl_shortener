@@ -72,13 +72,14 @@ $ git clone https://github.com/khaled4vokalz/gourl_shortener.git
   - **run the application:**
 
     ```bash
-    $ make run
+    $ go run ./cmd/gourl_shortener
     ```
 
-    if you don't have `make` you can alternatively use
+    Alternatively, we can use `make`. If you're in the `server` directory then `cd` out of it first
 
     ```bash
-    $ go run ./cmd/gourl_shortener
+    $ cd ..
+    $ make run-server
     ```
 
 - **Docker**
@@ -118,6 +119,13 @@ $ git clone https://github.com/khaled4vokalz/gourl_shortener.git
 
     ```bash
     $ npm start
+    ```
+
+    Alternatively, we can use `make`. If you're in the `client` directory then `cd` out of it
+
+    ```bash
+    $ cd ..
+    $ make run-client
     ```
 
   App should be running in development mode. Open [http://localhost:3000](http://localhost:3000) to view it in the browser. It's using Hot reload.
@@ -257,21 +265,16 @@ Any configuration mentioned above can be overridden using Environment variables 
 
 ### Backend
 
-Get into server directory
-
-```bash
-$ cd gourl_shortener/server
-```
-
 Run unit tests with:
 
 ```bash
-$ make test
+$ make test-server
 ```
 
-If you don't have `make` you can alternatively use
+If you don't have `make` you can get inside the server directory and run
 
 ```bash
+$ cd gourl_shortener/server
 $ go test ./...
 ```
 

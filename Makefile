@@ -1,8 +1,14 @@
-.PHONY: run
-run:
+.PHONY: run-server test-server run-client
+
+run-server:
+	cd server; \
 	go run ./cmd/gourl_shortener
 
-.PHONY: test
-test:
+test-server:
+	cd server; \
 	go test ./...
+
+run-client:
+	cd client; \
+	npm start
 
